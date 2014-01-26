@@ -1,0 +1,121 @@
+<doctype html>
+<!--
+
+PROBLEM:
+Latin for "Little Animal", the term "animalcule" was coined
+by Anton van Leeuwenhoek, the 17th-century discoverer of microorganisms
+to describe the inhabitants of the strange new world he was
+observing. In this exercise small microorganism-like entities are cloned
+by clicking on their ancestors. Since we needed a test to put our 
+candidates "under a microscope", we thought it would be poetic 
+to make them create their own microscopic environment, as well as 
+something small and simple that would tell us more about them
+than a casual glance at the assignment would expect.
+
+SOLUTION:
+-->
+<html lang='en-us'>
+<head>
+<style>
+
+/* Reset the document's style */
+body, html {
+  margin: 0;
+}
+
+/* Give the 'animalcules' their default values */
+.animalcule {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 50px;
+  margin: 0;
+  padding: 0;
+}
+
+</style>
+<script>
+
+(function(){
+  'use strict';
+
+  // Stores all the animalcules in an array
+  var animalcules = [];
+
+  // Creates adorable colors
+  var pastelGenerator = function(){
+    var r = (Math.round(Math.random()*127)+127).toString(16);
+    var g = (Math.round(Math.random()*127)+127).toString(16);
+    var b = (Math.round(Math.random()*127)+127).toString(16);
+    return '#'+r+g+b;
+  };
+
+  // The constructor for our animalcules
+  var binaryFission = function() {
+    var element = document.createElement('div');
+
+    element.dataset.num = animalcules.length;
+    element.dataset.x = this != undefined? this.dataset.x : window.innerWidth/2;
+    element.dataset.y = this != undefined? this.dataset.y : window.innerHeight/2;
+    element.dataset.dx = (Math.random()*3);
+    element.dataset.dy = (Math.random()*3);
+    element.className = 'animalcule';
+    element.style.backgroundColor = pastelGenerator();
+
+    element.addEventListener('mousedown', binaryFission);
+
+    document.body.appendChild(element);
+
+    animalcules.push(document.getElementsByClassName('animalcule')[animalcules.length]);
+  };
+
+  // Game loop function, called recursively through requestAnimationFrame
+  var ticker = function(){
+    for (var i = animalcules.length - 1; i >= 0; --i) {
+
+      // Retrieve the positions and deltas
+      var dx = parseFloat(animalcules[i].dataset.dx);
+      var dy = parseFloat(animalcules[i].dataset.dy);
+      var x = parseFloat(animalcules[i].dataset.x) + dx;
+      var y = parseFloat(animalcules[i].dataset.y) + dy;
+
+      // Reverse deltas if animalcule hits a wall
+      if (x + 50 >= window.innerWidth || x <= 0) dx = -dx;
+      if (y + 50 >= window.innerHeight || y <= 0) dy = -dy;
+
+      // Add the deltas to the positions
+      x += dx;
+      y += dy;
+
+      // Update the positions in the view
+      animalcules[i].style.WebkitTransform = animalcules[i].style.transform = 'translate(' + x + 'px, ' + y + 'px)';
+
+      // Record the new positions
+      animalcules[i].dataset.dx = dx;
+      animalcules[i].dataset.dy = dy;
+      animalcules[i].dataset.x = x;
+      animalcules[i].dataset.y = y;
+    }
+
+    // Request the next frame to continue the game loop
+    window.requestAnimationFrame(ticker);
+  };
+
+  var init = function() {
+
+    // Create our first animalcule
+    binaryFission();
+
+    // Start the game loop
+    ticker();
+  };
+
+  // Begin when DOM is ready
+  document.addEventListener("DOMContentLoaded", init);
+})();
+
+</script>
+</head>
+<body></body>
+</html>
