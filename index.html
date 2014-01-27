@@ -16,6 +16,9 @@ SOLUTION:
 -->
 <html lang='en-us'>
 <head>
+
+<meta name="viewport" content="initial-scale=1, maximum-scale=1, width=device-width, user-scalable=no">
+
 <style>
 
 /* Reset the document's style */
@@ -32,6 +35,8 @@ body, html {
   width: 50px;
   margin: 0;
   padding: 0;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
 }
 
 </style>
@@ -55,6 +60,7 @@ body, html {
   var binaryFission = function() {
     var element = document.createElement('div');
 
+    // The elements themselves store attributes
     element.dataset.num = animalcules.length;
     element.dataset.x = this != undefined? this.dataset.x : window.innerWidth/2;
     element.dataset.y = this != undefined? this.dataset.y : window.innerHeight/2;
@@ -63,10 +69,11 @@ body, html {
     element.className = 'animalcule';
     element.style.backgroundColor = pastelGenerator();
 
+    // Mousedown will give faster responsiveness on mobile devices
     element.addEventListener('mousedown', binaryFission);
 
+    // Add animacule to the body and the array
     document.body.appendChild(element);
-
     animalcules.push(document.getElementsByClassName('animalcule')[animalcules.length]);
   };
 
