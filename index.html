@@ -90,8 +90,15 @@ body, html {
       var y = parseFloat(animalcules[i].dataset.y) + dy;
 
       // Reverse deltas if animalcule hits a wall
-      if (x + 50 >= window.innerWidth || x <= 0) dx = -dx;
-      if (y + 50 >= window.innerHeight || y <= 0) dy = -dy;
+      // & record the change
+      if (x + 50 >= window.innerWidth || x <= 0) {
+        dx = -dx;
+        animalcules[i].dataset.dx = dx;
+      }
+      if (y + 50 >= window.innerHeight || y <= 0) {
+        dy = -dy;
+        animalcules[i].dataset.dy = dy;
+      }
 
       // Add the deltas to the positions
       x += dx;
@@ -101,8 +108,6 @@ body, html {
       animalcules[i].style.WebkitTransform = animalcules[i].style.transform = 'translate(' + x + 'px, ' + y + 'px)';
 
       // Record the new positions
-      animalcules[i].dataset.dx = dx;
-      animalcules[i].dataset.dy = dy;
       animalcules[i].dataset.x = x;
       animalcules[i].dataset.y = y;
     }
