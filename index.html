@@ -1,7 +1,8 @@
 <doctype html>
 <!--
 
-PROBLEM:
+ASSIGNMENT:
+
 Latin for "Little Animal", the term "animalcule" was coined
 by Anton van Leeuwenhoek, the 17th-century discoverer of microorganisms
 to describe the inhabitants of the strange new world he was
@@ -13,6 +14,7 @@ something small and simple that would tell us more about them
 than a casual glance at the assignment would expect.
 
 SOLUTION:
+
 -->
 <html lang='en-us'>
 <head>
@@ -44,8 +46,11 @@ body, html {
 </style>
 <script>
 
-(function(){
+!function(){
   'use strict';
+
+  var mobile = window.navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
+  var press = mobile? 'touchstart' : 'mousedown'; 
 
   // Stores all the animalcules in an array
   var animalcules = [];
@@ -59,7 +64,9 @@ body, html {
   };
 
   // The constructor for our animalcules
-  var binaryFission = function() {
+  var binaryFission = function(e) {
+    if (mobile) e.preventDefault();
+
     var element = document.createElement('div');
 
     // The elements themselves store attributes
@@ -72,7 +79,8 @@ body, html {
     element.style.backgroundColor = pastelGenerator();
 
     // Mousedown will give faster responsiveness on mobile devices
-    element.addEventListener('mousedown', binaryFission);
+
+    element.addEventListener(press, binaryFission);
 
     // Add animacule to the body and the array
     document.body.appendChild(element);
@@ -80,7 +88,7 @@ body, html {
   };
 
   // Game loop function, called recursively through requestAnimationFrame
-  var ticker = function(){
+  var ticker = function() {
     for (var i = animalcules.length - 1; i >= 0; --i) {
 
       // Retrieve the positions and deltas
@@ -127,7 +135,7 @@ body, html {
 
   // Begin when DOM is ready
   document.addEventListener("DOMContentLoaded", init);
-})();
+}();
 
 </script>
 </head>
