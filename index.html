@@ -4,7 +4,7 @@
 ASSIGNMENT:
 
 Latin for "Little Animal", the term "animalcule" was coined
-by Anton van Leeuwenhoek, the 17th-century discoverer of microorganisms
+by Anton van Leeuwenhoek, the 17th-century discoverer of microorganisms,
 to describe the inhabitants of the strange new world he was
 observing. In this exercise small microorganism-like entities are cloned
 by clicking on their ancestors. Since we needed a test to put our 
@@ -89,13 +89,15 @@ body, html {
 
   // Game loop function, called recursively through requestAnimationFrame
   var ticker = function() {
-    for (var i = animalcules.length - 1; i >= 0; --i) {
+    var dx, dy, x, y;
+
+    for (var i = 0, _len = animalcules.length - 1; i < _len; ++i) {
 
       // Retrieve the positions and deltas
-      var dx = parseFloat(animalcules[i].dataset.dx);
-      var dy = parseFloat(animalcules[i].dataset.dy);
-      var x = parseFloat(animalcules[i].dataset.x) + dx;
-      var y = parseFloat(animalcules[i].dataset.y) + dy;
+      dx = parseFloat(animalcules[i].dataset.dx);
+      dy = parseFloat(animalcules[i].dataset.dy);
+      x = parseFloat(animalcules[i].dataset.x) + dx;
+      y = parseFloat(animalcules[i].dataset.y) + dy;
 
       // Reverse deltas if animalcule hits a wall
       // & record the change
