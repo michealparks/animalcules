@@ -67,59 +67,50 @@ body, html {
   var binaryFission = function(e) {
 
     var element = document.createElement('div');
+    var len = animalcules.length
 
-    // The elements themselves store attributes
-    element.dataset.num = animalcules.length;
-    element.dataset.x = this != undefined? this.dataset.x : window.innerWidth/2;
-    element.dataset.y = this != undefined? this.dataset.y : window.innerHeight/2;
-    element.dataset.dx = (Math.random()*3);
-    element.dataset.dy = (Math.random()*3);
     element.className = 'animalcule';
     element.style.backgroundColor = pastelGenerator();
-
-    // Mousedown will give faster responsiveness on mobile devices
 
     element.addEventListener(press, binaryFission);
 
     // Add animacule to the body and the array
     document.body.appendChild(element);
-    animalcules.push(document.getElementsByClassName('animalcule')[animalcules.length]);
+
+    animalcules.push({
+      style: document.getElementsByClassName('animalcule')[len].style,
+      x: this != undefined? animalcules[len-1].x : window.innerWidth/2,
+      y: this != undefined? animalcules[len-1].y : window.innerHeight/2,
+      dx: Math.random()*3,
+      dy: Math.random()*3
+    });
+
+    console.log(animalcules)
 
   };
 
   // Game loop function, called recursively through requestAnimationFrame
   var ticker = function() {
-    var dx, dy, x, y;
+    var x, y;
 
-    for (var i = 0, _len = animalcules.length - 1; i < _len; ++i) {
+    for (var i = 0, _len = animalcules.length - 1; i < _len; i++) {
 
-      // Retrieve the positions and deltas
-      dx = parseFloat(animalcules[i].dataset.dx);
-      dy = parseFloat(animalcules[i].dataset.dy);
-      x = parseFloat(animalcules[i].dataset.x) + dx;
-      y = parseFloat(animalcules[i].dataset.y) + dy;
+      // Retrieve the positions
+      x = animalcules[i].x
+      y = animalcules[i].y
 
       // Reverse deltas if animalcule hits a wall
-      // & record the change
-      if (x + 50 >= window.innerWidth || x <= 0) {
-        dx = -dx;
-        animalcules[i].dataset.dx = dx;
-      }
-      if (y + 50 >= window.innerHeight || y <= 0) {
-        dy = -dy;
-        animalcules[i].dataset.dy = dy;
-      }
+      if (x + 50 >= window.innerWidth || x <= 0)
+        animalcules[i].dx = -animalcules[i].dx;
+      if (y + 50 >= window.innerHeight || y <= 0)
+        animalcules[i].dy = -animalcules[i].dy;
 
       // Add the deltas to the positions
-      x += dx;
-      y += dy;
+      x = animalcules[i].x = x + animalcules[i].dx;
+      y = animalcules[i].y = y + animalcules[i].dy;
 
       // Update the positions in the view
-      animalcules[i].style.WebkitTransform = animalcules[i].style.transform = 'translate(' + x + 'px, ' + y + 'px)';
-
-      // Record the new positions
-      animalcules[i].dataset.x = x;
-      animalcules[i].dataset.y = y;
+      animalcules[i].style.WebkitTransform = animalcules[i].style.transform = 'translate('+x+'px,'+y+'px)';
     }
 
     // Request the next frame to continue the game loop
