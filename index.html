@@ -1,4 +1,4 @@
-<doctype html>
+<!DOCTYPE html>
 <!--
 
 ASSIGNMENT:
@@ -19,118 +19,116 @@ SOLUTION:
 <html lang='en-us'>
 <head>
 
+<title> Animalcules | Micheal Parks </title>
+<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, width=device-width, user-scalable=no">
 
 <style>
 
-/* Reset the document's style */
 body, html {
-  margin: 0;
+  margin : 0;
 }
 
-/* Give the 'animalcules' their default values */
 .animalcule {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 50px;
-  width: 50px;
-  margin: 0;
-  padding: 0;
-
-  /* Force GPU rendering & compositing */
-  -webkit-backface-visibility: hidden;
-          backface-visibility: hidden;
+  position    : absolute;
+  top         : 0;
+  left        : 0;
+  height      : 50px;
+  width       : 50px;
 }
 
 </style>
+</head>
+
+<body></body>
+
 <script>
 
 !function(){
   'use strict';
 
-  var mobile = window.navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry)/);
-  var press = mobile? 'touchstart' : 'mousedown'; 
+  var 
+  app_window  = window,
+  app_doc     = app_window.document,
 
-  // Stores all the animalcules in an array
-  var animalcules = [];
+  isMobile    = /mobile|tablet|ip(ad|hone|od)|android|silk/i.test(app_window.navigator.userAgent) && 
+                app_window['ontouchstart'] !== void 0,
+  press       = (isMobile) ? 'touchend' : 
+                (app_window.navigator.pointerEnabled || app_window.navigator.msPointerEnabled) ? 'pointerup' : 
+                'mouseup',
+  transform   = app_doc.body.style['webkitTransform'] !== void 0 ? 'webkitTransform' : 'transform',
+  animalcules = [],
+  math = Math;
+
+  function random () {
+    return math.random();
+  }
+
+  function round (x) {
+    return math.round(x);
+  }
 
   // Creates adorable colors
-  var pastelGenerator = function(){
-    var r = (Math.round(Math.random()*127)+127).toString(16);
-    var g = (Math.round(Math.random()*127)+127).toString(16);
-    var b = (Math.round(Math.random()*127)+127).toString(16);
-    return '#'+r+g+b;
+  function pastelGenerator () {
+    return '#' + 
+           /* r */ (round(random() * 127) + 127).toString(16) + 
+           /* g */ (round(random() * 127) + 127).toString(16) + 
+           /* b */ (round(random() * 127) + 127).toString(16);
   };
 
   // The constructor for our animalcules
-  var binaryFission = function(e) {
+  function binaryFission (e) {
 
-    var element = document.createElement('div');
-    var len = animalcules.length
+    var 
+    len = animalcules.length,
+    element = app_doc.createElement('div');
 
     element.className = 'animalcule';
     element.style.backgroundColor = pastelGenerator();
-
     element.addEventListener(press, binaryFission);
 
     // Add animacule to the body and the array
-    document.body.appendChild(element);
+    app_doc.body.appendChild(element);
 
     animalcules.push({
-      style: document.getElementsByClassName('animalcule')[len].style,
-      x: this != undefined? animalcules[len-1].x : window.innerWidth/2,
-      y: this != undefined? animalcules[len-1].y : window.innerHeight/2,
-      dx: Math.random()*3,
-      dy: Math.random()*3
+      style : element.style,
+      x     : len !== 0 ? animalcules[len-1].x : app_window.innerWidth/2,
+      y     : len !== 0 ? animalcules[len-1].y : app_window.innerHeight/2,
+      dx    : random() * 3,
+      dy    : random() * 3
     });
-
-    console.log(animalcules)
 
   };
 
   // Game loop function, called recursively through requestAnimationFrame
-  var ticker = function() {
-    var x, y;
-
-    for (var i = 0, _len = animalcules.length - 1; i < _len; i++) {
-
-      // Retrieve the positions
-      x = animalcules[i].x
-      y = animalcules[i].y
-
-      // Reverse deltas if animalcule hits a wall
-      if (x + 50 >= window.innerWidth || x <= 0)
-        animalcules[i].dx = -animalcules[i].dx;
-      if (y + 50 >= window.innerHeight || y <= 0)
-        animalcules[i].dy = -animalcules[i].dy;
+  function tick () {
+    for (var i = 0, x, y, len = animalcules.length - 1; i < len; i++) {
+      x = animalcules[i].x;
+      y = animalcules[i].y;
 
       // Add the deltas to the positions
       x = animalcules[i].x = x + animalcules[i].dx;
       y = animalcules[i].y = y + animalcules[i].dy;
 
+      // Reverse deltas if animalcule hits a wall
+      if (x + 50 >= app_window.innerWidth || x <= 0)
+        animalcules[i].dx = -animalcules[i].dx;
+      if (y + 50 >= app_window.innerHeight || y <= 0)
+        animalcules[i].dy = -animalcules[i].dy;
+
       // Update the positions in the view
-      animalcules[i].style.WebkitTransform = animalcules[i].style.transform = 'translate('+x+'px,'+y+'px)';
+      animalcules[i].style[transform] = 'translate(' + x + 'px,' + y + 'px)';
     }
 
     // Request the next frame to continue the game loop
-    window.requestAnimationFrame(ticker);
+    app_window.requestAnimationFrame(tick);
   };
 
-  var init = function() {
-
-    // Create our first animalcule
-    binaryFission();
-
-    // Start the game loop
-    ticker();
-  };
-
-  // Begin when DOM is ready
-  document.addEventListener("DOMContentLoaded", init);
+  // Init.
+  binaryFission();
+  tick();
 }();
 
 </script>
-</head>
-<body></body>
 </html>
