@@ -99,12 +99,16 @@ Animalcule.prototype.update = function(diff) {
   var x = Math.round(this.x);
   var y = Math.round(this.y);
 
-  if (x + this.size >= window.innerWidth || x <= 0) {
-    this.dx = -this.dx;
+  if (x + this.size >= window.innerWidth) {
+    this.dx = -Math.abs(this.dx);
+  } else if (x <= 0) {
+    this.dx = Math.abs(this.dx);
   }
 
-  if (y + this.size >= window.innerHeight || y <= 0) {
-    this.dy = -this.dy;
+  if (y + this.size >= window.innerHeight) {
+    this.dy = -Math.abs(this.dy);
+  } else if (y <= 0) {
+    this.dy = Math.abs(this.dy);
   }
 
   this.style[this.transform] = 'translate('+this.x+'px,'+this.y+'px)';
