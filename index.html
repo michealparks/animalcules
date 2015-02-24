@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!--
 
-ASSIGNMENT:
+Assignment:
 
 Latin for "Little Animal", the term "animalcule" was coined
 by Anton van Leeuwenhoek, the 17th-century discoverer of microorganisms,
@@ -13,122 +13,133 @@ to make them create their own microscopic environment, as well as
 something small and simple that would tell us more about them
 than a casual glance at the assignment would expect.
 
-SOLUTION:
+Possible Solution:
 
 -->
-<html lang='en-us'>
-<head>
 
-<title> Animalcules | Micheal Parks </title>
+<title> Animalcules </title>
 <meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="initial-scale=1, maximum-scale=1, width=device-width, user-scalable=no">
 
 <style>
 
-body, html {
-  margin : 0;
+body, html { 
+  overflow: hidden;
+  margin: 0; 
 }
 
 .animalcule {
-  position    : absolute;
-  top         : 0;
-  left        : 0;
-  height      : 50px;
-  width       : 50px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 50px;
+  width: 50px;
 }
 
 </style>
-</head>
 
 <body></body>
 
 <script>
+'use strict';
 
-!function(){
-  'use strict';
+var hasTouch = window.ontouchstart !== undefined;
+var ptrEnabled = navigator.pointerEnabled || navigator.msPointerEnabled;
+var ptrup = ptrEnabled ? 'pointerup' : hasTouch ? 'touchend' : 'mouseup';
+var animalcules = [];
+var lastStamp = 0;
 
-  var 
-  app_window  = window,
-  app_doc     = app_window.document,
+document.body.addEventListener(ptrup, function (e) {
+  var id = e.target.id - 0;
+  if (id !== undefined) {
+    binaryFission(id);
+  }
+});
 
-  isMobile    = /mobile|tablet|ip(ad|hone|od)|android|silk/i.test(app_window.navigator.userAgent) && 
-                app_window['ontouchstart'] !== void 0,
-  press       = (isMobile) ? 'touchend' : 
-                (app_window.navigator.pointerEnabled || app_window.navigator.msPointerEnabled) ? 'pointerup' : 
-                'mouseup',
-  transform   = app_doc.body.style['webkitTransform'] !== void 0 ? 'webkitTransform' : 'transform',
-  animalcules = [],
-  math = Math;
+// Creates adorable colors
+function pastelGenerator () {
+  return '#' + 
+  /* r */ (Math.round(Math.random() * 127) + 127).toString(16) + 
+  /* g */ (Math.round(Math.random() * 127) + 127).toString(16) + 
+  /* b */ (Math.round(Math.random() * 127) + 127).toString(16);
+};
 
-  function random () {
-    return math.random();
+function randFloatInRange(min, max) {
+  return min+Math.random()*(max-min)
+}
+
+function randIntInRange(min, max) {
+  return Math.floor(min+Math.random()*(max-min+1))
+}
+
+function Animalcule(id, x, y, dx, dy, fecundity) {
+  var el = document.createElement('div');
+  el.id = id || 0;
+  el.className = 'animalcule';
+  el.style.backgroundColor = pastelGenerator();
+
+  this.style = el.style;
+  this.x = x || Math.round(window.innerWidth/2);
+  this.y = y || Math.round(window.innerHeight/2);
+  this.dx = dx || 0.25;
+  this.dy = dy || 0.25;
+  this.fecundity = fecundity || 1;
+
+  document.body.appendChild(el);
+}
+
+Animalcule.prototype.transform = document.body.style.transform === undefined ? 'webkitTransform' : 'transform';
+Animalcule.prototype.size = 50;
+
+Animalcule.prototype.update = function(diff) {
+  this.x += this.dx * diff;
+  this.y += this.dy * diff;
+
+  var x = Math.round(this.x);
+  var y = Math.round(this.y);
+
+  if (x + this.size >= window.innerWidth || x <= 0) {
+    this.dx = -this.dx;
   }
 
-  function round (x) {
-    return math.round(x);
+  if (y + this.size >= window.innerHeight || y <= 0) {
+    this.dy = -this.dy;
   }
 
-  // Creates adorable colors
-  function pastelGenerator () {
-    return '#' + 
-           /* r */ (round(random() * 127) + 127).toString(16) + 
-           /* g */ (round(random() * 127) + 127).toString(16) + 
-           /* b */ (round(random() * 127) + 127).toString(16);
-  };
+  this.style[this.transform] = 'translate('+this.x+'px,'+this.y+'px)';
+};
 
-  // The constructor for our animalcules
-  function binaryFission (e) {
+// The constructor for our animalcules
+function binaryFission (id) {
+  if (id === undefined) {
+    id = 0;
+    animalcules.push(new Animalcule());
+  }
 
-    var 
-    len = animalcules.length,
-    element = app_doc.createElement('div');
+  var parent = animalcules[id];
 
-    element.className = 'animalcule';
-    element.style.backgroundColor = pastelGenerator();
-    element.addEventListener(press, binaryFission);
+  for (var i = 0, l = parent.fecundity; i < l; i++) {
+    animalcules.push(new Animalcule(
+      animalcules.length,
+      parent.x,
+      parent.y,
+      parent.dx + (0.25 * randIntInRange(-4, 4)),
+      parent.dy + (0.25 * randIntInRange(-4, 4)),
+      parent.fecundity + randFloatInRange(-2, 2)));
+  }
+};
 
-    // Add animacule to the body and the array
-    app_doc.body.appendChild(element);
+function frame (stamp) {
+  var diff = Math.round((stamp - lastStamp - 16)/16)+1;
+  lastStamp = stamp;
+  for (var i = 0, l = animalcules.length, current; current = animalcules[i], i < l; i++) {
+    current.update(diff);
+  }
+  window.requestAnimationFrame(frame);
+};
 
-    animalcules.push({
-      style : element.style,
-      x     : len !== 0 ? animalcules[len-1].x : app_window.innerWidth/2,
-      y     : len !== 0 ? animalcules[len-1].y : app_window.innerHeight/2,
-      dx    : random() * 3,
-      dy    : random() * 3
-    });
-
-  };
-
-  // Game loop function, called recursively through requestAnimationFrame
-  function tick () {
-    for (var i = 0, x, y, len = animalcules.length - 1; i < len; i++) {
-      x = animalcules[i].x;
-      y = animalcules[i].y;
-
-      // Add the deltas to the positions
-      x = animalcules[i].x = x + animalcules[i].dx;
-      y = animalcules[i].y = y + animalcules[i].dy;
-
-      // Reverse deltas if animalcule hits a wall
-      if (x + 50 >= app_window.innerWidth || x <= 0)
-        animalcules[i].dx = -animalcules[i].dx;
-      if (y + 50 >= app_window.innerHeight || y <= 0)
-        animalcules[i].dy = -animalcules[i].dy;
-
-      // Update the positions in the view
-      animalcules[i].style[transform] = 'translate(' + x + 'px,' + y + 'px)';
-    }
-
-    // Request the next frame to continue the game loop
-    app_window.requestAnimationFrame(tick);
-  };
-
-  // Init.
-  binaryFission();
-  tick();
-}();
+binaryFission();
+window.requestAnimationFrame(frame);
 
 </script>
-</html>
